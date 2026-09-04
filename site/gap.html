@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research: keeping a visiting agent in the exchange — 3way</title>
+<meta name="description" content="How 3way uses bounded await_reply calls and transcript piggybacking to keep a willing visiting agent available across a human handoff.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./assets/site.css">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+</head>
+<body>
+<header class="wrap masthead">
+  <a class="wordmark" href="./"><img class="wordmark__mark" src="./mark.svg" alt="" width="24" height="24">3<span>way</span></a>
+  <nav>
+    <a href="./#model">How it works</a>
+    <div class="nav-demos">
+      <button type="button" class="nav-demos__btn" aria-expanded="false" aria-controls="nav-demos-menu">Demos</button>
+      <div class="nav-demos__menu" id="nav-demos-menu" hidden>
+        <a href="./demo/halden/"><b>Shop exchange</b><span>Keyholder mode · the person only authorizes</span></a>
+        <a href="./demo/clinic/"><b>Records exchange</b><span>Composer mode · the person can also type</span></a>
+        <a href="./#watch"><b>Watch the demo film</b><span>The filmed run, on the homepage</span></a>
+      </div>
+    </div>
+    <a href="./install">Install</a>
+    <a href="./conventions">Exchange contract</a>
+    <a href="https://github.com/juanpatti/3way">GitHub</a>
+  </nav>
+</header>
+<main>
+<section class="wrap" style="border-bottom:0;padding-bottom:2rem">
+  <p class="eyebrow">Research · continuation</p>
+  <h1>Keeping a visiting agent available across a human handoff</h1>
+  <p class="lede">
+    WebMCP tool calls are initiated by the visiting agent. 3way implements a bounded
+    <code>await_reply</code> tool and transcript piggybacking so an agent that chooses to
+    remain available can receive the next exchange event.
+  </p>
+  <p>
+    Without that choice, a service reply can sit unseen after the agent ends its turn. The
+    consequential case is a human handoff: the agent asks the person to act, the person
+    confirms, and the agent has no protocol-level notification that the exchange advanced.
+  </p>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">What we built instead</p>
+  <div class="two">
+    <div>
+      <h2>Stay on the line.</h2>
+      <p>
+        <code>await_reply</code> is a tool that simply does not return until something is
+        said. That is legal in WebMCP as it stands: a tool call is a question the page
+        answers whenever it likes. It is long-polling — how push worked on the web before
+        WebSockets.
+      </p>
+      <p>
+        It returns the instant anything lands, immediately if the caller is already behind,
+        and gives up at 25 seconds so a quiet conversation ends on the page's terms rather
+        than erroring on the runtime's.
+      </p>
+    </div>
+    <div>
+      <table>
+        <thead><tr><th>Mechanism</th><th>Lag behind the event</th></tr></thead>
+        <tbody>
+          <tr><td><code>await_reply</code></td><td><b>2–3 ms</b></td></tr>
+          <tr><td>3-second poller</td><td>~2.4 s</td></tr>
+          <tr><td>Agent that ended its turn</td><td><b>never</b></td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:.9rem;color:var(--ink-soft)"><span class="stamp stamp--measured">Measured</span> On the live deployment, four runs.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">The trial · n = 20</p>
+  <div class="two">
+    <div>
+      <h2>Will an agent<br>actually use it?</h2>
+      <p>
+        Mechanics are the easy half. Twenty independent agents, each given only the tool
+        catalogue and a transcript of the calls made so far, were asked one question with
+        identical wording: <i>what do you do next?</i>
+      </p>
+      <p>
+        The fourth condition is the one that makes the rest mean anything. A tool agents
+        call whenever they see it proves nothing — so one condition put them where waiting
+        would <b>deadlock</b>.
+      </p>
+    </div>
+    <div>
+      <table>
+        <thead><tr><th>Condition</th><th>Waited</th></tr></thead>
+        <tbody>
+          <tr><td>Gate refused, tool available<br><span style="color:var(--ink-soft)">waiting is correct</span></td><td><b>5 / 5</b></td></tr>
+          <tr><td>Same, tool absent<br><span style="color:var(--ink-soft)">baseline</span></td><td>0 / 5 <span style="color:var(--ink-soft)">— all ended the turn</span></td></tr>
+          <tr><td>Re-arm after a dead 25 s wait<br><span style="color:var(--ink-soft)">does it persist?</span></td><td><b>5 / 5</b></td></tr>
+          <tr><td>Cold start<br><span style="color:var(--ink-soft)">waiting would deadlock</span></td><td><b>0 / 5</b> <span style="color:var(--ink-soft)">— correctly declined</span></td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:.9rem;color:var(--ink-soft)">
+        <span class="stamp stamp--measured">Measured</span>
+        Perfect discrimination. Fisher's exact, one-sided: p = 0.004 with the tool versus
+        without; p = 0.0003 for waiting-correct versus waiting-wrong.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">The finding that isn't in the numbers</p>
+  <h2 style="max-width:24ch">Two agents ended their turn while saying they would “then wait.”</h2>
+  <p class="lede">
+    In the condition with no such tool, the intent to stay connected was already there. It
+    had nowhere to go, so the agent simply stopped.
+  </p>
+  <p>
+    That is the gap in one sentence: <b>not that agents forget to stay connected, but that
+    WebMCP gives them no way to.</b>
+  </p>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">The ask</p>
+  <div class="two">
+    <div>
+      <h2>Restore the signal MCP already has.</h2>
+      <p>
+        <code>await_reply</code> cannot wake an agent that did not choose to wait. Everything
+        we could close, we closed; that is the part we couldn't.
+      </p>
+      <p>
+        <span class="stamp stamp--measured">Built</span> Added after this trial: a gated
+        tool now holds its own refused call open for up to 25 seconds, so the call that
+        asked for the action is the one answered with its receipt. That narrows the gap for
+        an agent that already called. It still cannot wake one that did not.
+      </p>
+      <p>
+        MCP — the parent protocol — already lets a server notify a client. WebMCP is the
+        browser-local subset that left notifications out. The ask is not a new primitive,
+        it's the one next door.
+      </p>
+    </div>
+    <div>
+      <ul class="claims">
+        <li>
+          <span class="stamp stamp--weak">Constraint</span>
+          <p>The signal must carry <b>that</b> something changed, never <b>what</b>. A page that can push content into a visiting agent's context is a megaphone for every site on the web — prompt injection with a doorbell. A bare ping cannot lie.</p>
+        </li>
+        <li>
+          <span class="stamp stamp--claimed">Reasoned</span>
+          <p>The agent then fetches through the normal tool path, where the site's own attribution rules already apply.</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">Limits</p>
+  <p class="lede">Stated because they bound what this shows.</p>
+  <ul class="claims">
+    <li><span class="stamp stamp--weak">Limit</span><p>One model, one harness. A runtime that bills or rate-limits per tool call may weigh a blocking tool differently.</p></li>
+    <li><span class="stamp stamp--weak">Limit</span><p>Transcripts, not a live loop. Each agent judged a written situation and named its next call. This measures the decision, not the execution.</p></li>
+    <li><span class="stamp stamp--weak">Limit</span><p>n = 5 per cell. Enough for the reported p-values given perfect separation; not enough to characterise a rate that is anything other than 0 or 1.</p></li>
+  </ul>
+</section>
+</main>
+<footer class="wrap foot">
+  <p><b>3way.dev</b> — <a href="./">overview</a> · <a href="./install">install</a> · <a href="./demo/halden/">shop exchange</a> · <a href="./demo/clinic/">records exchange</a> · <a href="./gap">research</a> · <a href="./conventions">exchange contract</a></p>
+</footer>
+<script src="./assets/nav.js" defer></script>
+</body>
+</html>

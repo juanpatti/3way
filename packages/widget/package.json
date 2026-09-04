@@ -1,0 +1,25 @@
+{
+  "name": "@3way/widget",
+  "version": "0.1.0",
+  "description": "Drop-in three-way conversation widget for WebMCP sites: a person, their own visiting agent, and the site's own agent, sharing one tool registry and one gate.",
+  "type": "module",
+  "main": "./dist/3way.esm.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup && node ./scripts/bundle.mjs"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/juanpatti/3way.git",
+    "directory": "packages/widget"
+  },
+  "homepage": "https://3way.dev",
+  "bugs": {
+    "url": "https://github.com/juanpatti/3way/issues"
+  },
+  "unpkg": "./dist/3way.js"
+}

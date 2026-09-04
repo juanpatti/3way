@@ -1,0 +1,303 @@
+/* 3way.dev — the attributed exchange.
+   Evidence and limitation stamps share the widget's visual language for message origins. */
+
+:root {
+  --paper:      #EAEDF0;
+  --raised:     #F7F9FA;
+  --ink:        #11151A;
+  --ink-soft:   #4C565F;
+  --rule:       #C9D0D7;
+  /* The only two hues on the site. Both mean something. */
+  --unverified: #5B3FD1;  /* an agent's claim about itself */
+  --present:    #0B6E5F;  /* a human, actually here */
+
+  --measure: 34rem;
+  --gap: clamp(1rem, 2.5vw, 2rem);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
+  line-height: 1.6;
+  font-synthesis-weight: none;
+}
+
+/* Faint horizontal ruling, like security paper. Sits under everything, reads as texture. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom, transparent 0 43px, rgba(17,21,26,.035) 43px 44px);
+  z-index: 0;
+}
+body > * { position: relative; z-index: 1; }
+
+h1, h2, h3 {
+  font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 { font-size: clamp(2.3rem, 1.5rem + 2.6vw, 3.7rem); font-weight: 700; }
+h2 { font-size: clamp(1.7rem, 1.2rem + 2vw, 2.7rem); }
+h3 { font-size: 1.18rem; letter-spacing: -0.012em; }
+
+p { margin: 0 0 1.05em; max-width: var(--measure); }
+a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+a:focus-visible, button:focus-visible {
+  outline: 2.5px solid var(--unverified);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---- The stamp. The signature element. ------------------------------------ */
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: .4em;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: .625rem;
+  font-weight: 500;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  padding: .28em .55em;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  white-space: nowrap;
+  vertical-align: 2px;
+}
+.stamp::before { content: ''; width: 5px; height: 5px; background: currentColor; border-radius: 50%; }
+.stamp--measured { color: var(--present); }
+.stamp--claimed   { color: var(--unverified); }
+.stamp--weak      { color: var(--ink); border-style: dashed; }
+.stamp--measured::before { border-radius: 50%; }
+.stamp--claimed::before  { border-radius: 0; transform: rotate(45deg); }
+.stamp--weak::before     { border-radius: 0; }
+
+/* ---- Shell ---------------------------------------------------------------- */
+.wrap { width: min(72rem, 100% - 2 * var(--gap)); margin-inline: auto; }
+
+.masthead {
+  /* Above <main>, or the hero transcript paints over the open Demos menu. */
+  z-index: 3;
+  display: flex; align-items: baseline; gap: 1.5rem; flex-wrap: wrap;
+  padding: 1.4rem 0 1.2rem;
+  border-bottom: 1px solid var(--rule);
+}
+.wordmark {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700; font-size: 1.22rem; letter-spacing: -.03em;
+  text-decoration: none;
+}
+.wordmark__mark { width: 1.3em; height: 1.3em; display: inline-block; vertical-align: middle; margin-right: .4rem; }
+.wordmark span { color: var(--unverified); }
+.masthead nav { margin-left: auto; display: flex; align-items: baseline; gap: 1.25rem; flex-wrap: wrap; }
+.masthead nav a {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .74rem; letter-spacing: .07em; text-transform: uppercase;
+  text-decoration: none; color: var(--ink-soft);
+  padding-bottom: 2px; border-bottom: 1px solid transparent;
+}
+.masthead nav a:hover, .masthead nav a[aria-current] { color: var(--ink); border-bottom-color: var(--ink); }
+
+/* ---- Demos disclosure in the masthead ------------------------------------- */
+.nav-demos { position: relative; }
+/* Inline-block, not inline-flex: the masthead aligns its items on the text baseline,
+   and a flex button reports a different baseline, which sat "Demos" a few pixels
+   below its neighbours. */
+.nav-demos__btn {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .74rem; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--ink-soft); background: none; border: 0; cursor: pointer;
+  padding: 0 0 2px; margin: 0; border-bottom: 1px solid transparent;
+  display: inline-block; line-height: inherit;
+}
+.nav-demos__btn::after {
+  content: ''; display: inline-block; width: .42em; height: .42em; margin-left: .5em;
+  border-right: 1px solid currentColor; border-bottom: 1px solid currentColor;
+  transform: translateY(-.15em) rotate(45deg);
+  transition: transform .15s ease;
+}
+.nav-demos__btn:hover, .nav-demos__btn[aria-expanded="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+.nav-demos__btn[aria-expanded="true"]::after { transform: translateY(.1em) rotate(225deg); }
+.nav-demos__menu {
+  position: absolute; top: calc(100% + .9rem); left: 0; z-index: 5;
+  min-width: 22rem; padding: .35rem;
+  background: var(--raised); border: 1px solid var(--rule); border-radius: 3px;
+  box-shadow: 0 1px 0 var(--rule), 0 18px 40px -28px rgba(17,21,26,.5);
+}
+@media (min-width: 48rem) { .nav-demos__menu { left: 50%; transform: translateX(-50%); } }
+/* Scoped under .masthead so these outrank the masthead's own link rule, which would
+   otherwise set the menu items in the nav's mono uppercase. */
+.masthead .nav-demos__menu a {
+  display: block; padding: .65rem .8rem; border: 0; border-radius: 2px;
+  font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  font-size: .95rem; letter-spacing: 0; text-transform: none; text-decoration: none;
+}
+.masthead .nav-demos__menu a + a { border-top: 1px solid var(--rule); border-radius: 0 0 2px 2px; }
+.masthead .nav-demos__menu a:hover { background: rgba(17,21,26,.05); }
+.masthead .nav-demos__menu b { display: block; font-weight: 600; color: var(--ink); }
+.masthead .nav-demos__menu span {
+  display: block; margin-top: .2rem;
+  font-family: 'IBM Plex Mono', monospace; font-size: .64rem;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft);
+}
+
+section { padding: clamp(3.5rem, 7vw, 6.5rem) 0; border-bottom: 1px solid var(--rule); }
+section:last-of-type { border-bottom: 0; }
+
+/* An eyebrow that encodes the section's role in the argument, not decoration. */
+.eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .7rem; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--ink-soft); margin: 0 0 1.1rem;
+  display: flex; align-items: center; gap: .7rem;
+}
+.eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+
+.lede { font-size: clamp(1.1rem, 1rem + .5vw, 1.35rem); line-height: 1.5; color: var(--ink); max-width: 38rem; }
+.two { display: grid; grid-template-columns: 1fr; gap: clamp(1.5rem, 4vw, 3.5rem); }
+@media (min-width: 62rem) { .two { grid-template-columns: 1.05fr .95fr; align-items: start; } }
+/* The hero's left column carries a display headline and needs more room than a prose
+   column does, or the type has to shrink to fit and stops being a hero. */
+@media (min-width: 62rem) { .hero .two { grid-template-columns: 1.18fr .82fr; align-items: center; } }
+
+/* ---- Hero: the thesis is the transcript ----------------------------------- */
+.hero { padding-top: clamp(3rem, 6vw, 5rem); }
+.hero h1 { margin-bottom: 1.4rem; }
+.hero .lede { margin-bottom: 2.2rem; }
+.proof-line { margin-top: 1.6rem; font-size: .87rem; color: var(--ink-soft); }
+
+.cta-row { display: flex; gap: .8rem; flex-wrap: wrap; align-items: center; }
+.btn {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .78rem; letter-spacing: .06em; text-transform: uppercase;
+  text-decoration: none; padding: .8em 1.3em; border: 1.5px solid var(--ink);
+  border-radius: 2px; background: var(--ink); color: var(--paper);
+  transition: transform .12s ease, background .12s ease;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn--ghost { background: transparent; color: var(--ink); }
+.btn--ghost:hover { background: var(--ink); color: var(--paper); }
+
+/* ---- The transcript artifact ---------------------------------------------- */
+.record {
+  background: var(--raised);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  box-shadow: 0 1px 0 var(--rule), 0 18px 40px -28px rgba(17,21,26,.5);
+  overflow: hidden;
+}
+.record__head {
+  display: block; line-height: 1.5;
+  padding: .7rem .9rem; border-bottom: 1px solid var(--rule);
+  font-family: 'IBM Plex Mono', monospace; font-size: .68rem;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft);
+}
+.record__head b { color: var(--ink); font-weight: 500; }
+.record__body { padding: .9rem; display: flex; flex-direction: column; gap: .85rem; }
+
+.line { opacity: 0; transform: translateY(6px); animation: line-in .45s ease forwards; }
+@keyframes line-in { to { opacity: 1; transform: none; } }
+.line__who {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .625rem; letter-spacing: .13em; text-transform: uppercase;
+  display: block; margin-bottom: .3rem;
+}
+.line__who i { font-style: normal; opacity: .55; }
+.line__text {
+  margin: 0; max-width: none; font-size: .93rem; line-height: 1.5;
+  padding: .6rem .75rem; border-radius: 3px; border: 1px solid transparent;
+}
+.line--agent   .line__who  { color: var(--unverified); }
+.line--agent   .line__text { background: rgba(91,63,209,.07); border-color: rgba(91,63,209,.18); }
+.line--store   .line__who  { color: var(--ink-soft); }
+.line--store   .line__text { background: #fff; border-color: var(--rule); }
+.line--human   .line__who  { color: var(--present); }
+.line--human   .line__text { background: rgba(11,110,95,.08); border-color: rgba(11,110,95,.22); }
+
+/* The refusal. Deliberately not an error colour: in this design a refusal is a
+   conversational move, not a failure. Ink, a rule, and a stamp. */
+.refusal {
+  border: 1px solid var(--ink);
+  border-left-width: 4px;
+  border-radius: 3px;
+  padding: .75rem .85rem;
+  background: #fff;
+}
+.refusal__tag {
+  font-family: 'IBM Plex Mono', monospace; font-size: .625rem;
+  letter-spacing: .13em; text-transform: uppercase; color: var(--ink-soft);
+  display: block; margin-bottom: .35rem;
+}
+.refusal p { margin: 0; font-size: .93rem; max-width: none; }
+.sensor {
+  margin-top: .7rem; display: inline-flex; align-items: center; gap: .55rem;
+  font-family: 'IBM Plex Mono', monospace; font-size: .72rem;
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: .6em 1em; border: 1.5px solid var(--present); color: var(--present);
+  border-radius: 2px; background: transparent;
+}
+.sensor::before {
+  content: ''; width: 9px; height: 9px; border-radius: 50%;
+  background: var(--present); animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+
+/* ---- The film: the same framed record, holding a player ------------------- */
+.film { max-width: 62rem; }
+.film__frame { position: relative; aspect-ratio: 16 / 9; background: var(--ink); }
+.film__frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+/* ---- Claims list: every claim stamped ------------------------------------- */
+.claims { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; }
+.claims li {
+  display: grid; gap: .25rem .9rem; padding: 1.15rem 0;
+  border-top: 1px solid var(--rule);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 48rem) {
+  .claims li { grid-template-columns: 8.5rem 1fr; align-items: baseline; }
+}
+/* A stamp hugs its text. As a grid item it would otherwise stretch to the column and
+   stop reading as a stamp. */
+.claims > li > .stamp { justify-self: start; }
+.claims li:last-child { border-bottom: 1px solid var(--rule); }
+.claims p { margin: 0; max-width: 42rem; }
+
+.grid3 { display: grid; gap: 1.6rem; grid-template-columns: 1fr; }
+@media (min-width: 50rem) { .grid3 { grid-template-columns: repeat(3, 1fr); gap: 2rem; } }
+.card h3 { margin-bottom: .45rem; }
+.card p { font-size: .95rem; color: var(--ink-soft); margin: 0; }
+.card__n {
+  font-family: 'IBM Plex Mono', monospace; font-size: .68rem; letter-spacing: .12em;
+  color: var(--unverified); display: block; margin-bottom: .6rem;
+}
+
+table { width: 100%; border-collapse: collapse; font-size: .93rem; margin: 1.2rem 0; }
+th, td { text-align: left; padding: .7rem .8rem .7rem 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th {
+  font-family: 'IBM Plex Mono', monospace; font-size: .66rem;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); font-weight: 500;
+}
+td b { font-weight: 600; }
+code, .mono { font-family: 'IBM Plex Mono', monospace; font-size: .88em; }
+
+.foot { padding: 3rem 0 4rem; color: var(--ink-soft); font-size: .87rem; }
+.foot a { color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+  .line { opacity: 1; transform: none; }
+}

@@ -1,0 +1,5 @@
+This directory receives the built widget bundle and the vendored WebMCP polyfill when the
+site is assembled. `npm run site` builds the widget, copies the primary site into the
+generated output, and installs this demo beneath `demo/halden/`, including its `widget/`
+directory. This placeholder keeps the directory present and tracked before that copy runs.
+Neither generated file is committed.

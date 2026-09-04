@@ -1,0 +1,14 @@
+3way
+Copyright 2026 3way contributors
+
+This product includes software developed by Google LLC.
+
+  packages/widget/vendor/webmcp-polyfill.js
+  Copyright 2026 Google LLC
+  Licensed under the Apache License, Version 2.0
+  https://github.com/GoogleChromeLabs/webmcp-tools
+
+This file is vendored unmodified from GoogleChromeLabs/webmcp-tools and shims
+`document.modelContext` / `navigator.modelContext` on browsers that don't implement the
+WebMCP API natively, so tool registration works the same way regardless of the surface.
+See its own header for the original license text.

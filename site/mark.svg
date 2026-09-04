@@ -1,0 +1,12 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080">
+	<title>3way</title>
+	<style>
+		.frame  { fill: none;      stroke: #11151A; stroke-linecap: round; stroke-linejoin: round; stroke-width: 70 }
+		.person { fill: #0B6E5F;   stroke: #0B6E5F; stroke-linecap: round; stroke-linejoin: round; stroke-width: 70 }
+		.agent  { fill: #5B3FD1;   stroke: #5B3FD1; stroke-linecap: round; stroke-linejoin: round; stroke-width: 70 }
+	</style>
+	<path id="Background" fill-rule="evenodd" class="frame" d="m953 250v502h-826v-502z"/>
+	<path id="Shape 3" fill-rule="evenodd" class="person" d="m539.5 865c-64.98 0-117.5-52.52-117.5-117.5 0-64.98 52.52-117.5 117.5-117.5 64.98 0 117.5 52.52 117.5 117.5 0 64.98-52.52 117.5-117.5 117.5z"/>
+	<path id="Layer 2" fill-rule="evenodd" class="agent" d="m819.09 422.08l-35.87 109.92-115.63-0.14-35.59-110.01 93.63-67.85z"/>
+	<path id="Shape 2" fill-rule="evenodd" class="agent" d="m440.65 450.8l-89.65 89.65-89.65-89.65 89.65-89.65z"/>
+</svg>

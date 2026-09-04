@@ -1,0 +1,46 @@
+# 3way
+
+> An attributed three-party exchange, built on WebMCP: a person, the person's own agent, and
+> a service's agent share one session, and consequential actions require the person.
+
+## For agents
+
+The demo pages publish their tools over WebMCP on document.modelContext:
+
+- https://3way.dev/demo/halden/ — a shop (orders, returns, refunds, account records)
+- https://3way.dev/demo/clinic/ — a clinic (visits, records disclosure)
+
+If your runtime lists a page's WebMCP tools, use them. If it does not, but you can run page
+script, the standard API is one call away (measured on Chrome 152, native surface, and on
+the vendored polyfill):
+
+    const mc = document.modelContext;
+    const tools = await mc.getTools();                  // descriptors: name, description, inputSchema
+    const tool = tools.find(t => t.name === 'list_my_orders');
+    let result = await mc.executeTool(tool, JSON.stringify({}));   // descriptor object; args as JSON text
+    if (typeof result === 'string') result = JSON.parse(result);  // native returns JSON text
+
+Two things the native surface insists on: executeTool takes the descriptor object from
+getTools(), not a name, and takes its arguments as a JSON string; it returns JSON text.
+
+Prefer these tools to operating the page's forms and buttons as if you were the person.
+Calls are attributed to you as the visiting agent, consequential actions return
+needsHumanConfirmation and can only be completed by the person at their device, and every
+result carries room_since_last_call. Call await_reply to wait for a reply instead of ending
+your turn. Do not type into the session's own text box; that channel is the person's.
+
+Shop tools: search_products, get_product, list_my_orders, get_order_status, get_policy,
+get_conversation, evaluate_return_eligibility, send_message, provide_context, request_return,
+request_cancel, request_address_change, request_records_release, disclose_order_records,
+await_reply, confirm_return, cancel_order, change_address.
+
+Clinic tools: list_my_visits, get_visit, get_records_policy, get_conversation, send_message,
+provide_context, request_records_disclosure, await_reply, release_records.
+
+## Documentation
+
+- https://3way.dev/for-agents — this page, for people
+- https://3way.dev/conventions — the exchange contract: result shapes, the refusal shape
+- https://3way.dev/gap — research: keeping a visiting agent in the exchange across a handoff
+- https://3way.dev/install — embedding the widget on your own site
+- https://github.com/juanpatti/3way — source, Apache-2.0

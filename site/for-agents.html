@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>For agents: how to reach this site's WebMCP tools — 3way</title>
+<meta name="description" content="If you are an agent visiting 3way's demo pages: the tools are published over WebMCP on document.modelContext. How to list and call them from any runtime, and why to prefer that over operating the page as the person.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./assets/site.css">
+<style>pre { padding: .9rem 1rem; border-radius: 4px; background: #F5F7F8; border: 1px solid #DDE2E7; overflow-x: auto; font-size: .82rem; line-height: 1.55; }</style>
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+</head>
+<body>
+<header class="wrap masthead">
+  <a class="wordmark" href="./"><img class="wordmark__mark" src="./mark.svg" alt="" width="24" height="24">3<span>way</span></a>
+  <nav>
+    <a href="./#model">How it works</a>
+    <div class="nav-demos">
+      <button type="button" class="nav-demos__btn" aria-expanded="false" aria-controls="nav-demos-menu">Demos</button>
+      <div class="nav-demos__menu" id="nav-demos-menu" hidden>
+        <a href="./demo/halden/"><b>Shop exchange</b><span>Keyholder mode · the person only authorizes</span></a>
+        <a href="./demo/clinic/"><b>Records exchange</b><span>Composer mode · the person can also type</span></a>
+        <a href="./#watch"><b>Watch the demo film</b><span>The filmed run, on the homepage</span></a>
+      </div>
+    </div>
+    <a href="./install">Install</a>
+    <a href="./conventions">Exchange contract</a>
+    <a href="https://github.com/juanpatti/3way">GitHub</a>
+  </nav>
+</header>
+<main>
+<section class="wrap" style="border-bottom:0;padding-bottom:2rem">
+  <p class="eyebrow">For agents</p>
+  <h1>If you are an agent reading this site</h1>
+  <p class="lede">
+    The demo pages publish their tools over WebMCP, on <code>document.modelContext</code>.
+    Using them makes you a named participant in the exchange, with your calls attributed to
+    you and every result carrying what was said since your last call. Operating the page's
+    forms and buttons instead makes you indistinguishable from the person, which is the one
+    thing this site is built to avoid.
+  </p>
+  <p>
+    Two live pages: the <a href="./demo/halden/">shop exchange</a> and the
+    <a href="./demo/clinic/">records exchange</a>. Both register their tools a moment after
+    load, once the widget has fetched its policy.
+  </p>
+</section>
+
+<section class="wrap">
+  <h2>If your runtime lists the tools</h2>
+  <p>
+    ChatGPT's in-app browser in agent mode and Chrome 151+ with a WebMCP consumer show the
+    page's tools in your own tool list. Use them directly. Start with
+    <code>provide_context</code> so the service does not have to ask what the person already
+    told you, then the domain tools, then <code>send_message</code> when you want to say
+    something into the shared session.
+  </p>
+</section>
+
+<section class="wrap">
+  <h2>If your tool list does not show them, but you can run page script</h2>
+  <p>
+    Measured on Chrome 152, where <code>document.modelContext</code> is native: an agent
+    extension saw none of the page's tools in its own list, yet the standard API was one
+    script call away. This works on the vendored polyfill too, so it is the same recipe in
+    every runtime:
+  </p>
+<pre><code>const mc = document.modelContext;                       // native in Chrome 151+, polyfilled elsewhere
+const tools = await mc.getTools();                      // [{ name, description, inputSchema, ... }]
+const tool = tools.find(t => t.name === 'list_my_orders');
+let result = await mc.executeTool(tool, JSON.stringify({}));   // the descriptor itself; args as JSON text
+if (typeof result === 'string') result = JSON.parse(result);  // native returns JSON text
+// result.room_since_last_call carries everything said since your last call.</code></pre>
+  <p>
+    Two details, both found by failing at them on the native surface: <code>executeTool</code>
+    takes the descriptor object returned by <code>getTools()</code>, not a name; and the
+    arguments go in as a JSON string. Native returns the result as JSON text; the polyfill
+    returns an object. A call made this way is attributed as the visiting agent's, exactly as
+    a native call would be, and the person sees it narrated in the session.
+  </p>
+</section>
+
+<section class="wrap">
+  <h2>Why prefer this path</h2>
+  <ul class="claims">
+    <li><span class="stamp stamp--measured">Attributed</span><p>Every call you make is stamped as the visiting agent's. The person can read what you did, in order, in the session in the corner.</p></li>
+    <li><span class="stamp stamp--measured">Gated</span><p>Consequential actions (a refund, a cancellation, a records release) return <code>needsHumanConfirmation</code>. You cannot complete them, and pressing the confirm button yourself does not either: only the person's device ceremony does. The call you made holds open for up to 25 seconds while they act, so stay on it.</p></li>
+    <li><span class="stamp stamp--measured">Current</span><p>Every result carries <code>room_since_last_call</code>. Nothing is pushed to you; call <code>await_reply</code> to wait for a reply rather than ending your turn.</p></li>
+  </ul>
+  <p>
+    Do not type into the session's text box as if you were the person: that box is the
+    human's own channel, and using it misattributes your words. Speak with
+    <code>send_message</code> instead.
+  </p>
+</section>
+
+<section class="wrap">
+  <h2>Tools on each page</h2>
+  <p>The authoritative list is always <code>getTools()</code>; this is what it returned on 2026-09-01.</p>
+  <p><b>Shop</b> (<a href="./demo/halden/">/demo/halden/</a>): <code>search_products, get_product, list_my_orders, get_order_status, get_policy, get_conversation, evaluate_return_eligibility, send_message, provide_context, request_return, request_cancel, request_address_change, request_records_release, disclose_order_records, await_reply, confirm_return, cancel_order, change_address</code>.</p>
+  <p><b>Clinic</b> (<a href="./demo/clinic/">/demo/clinic/</a>): <code>list_my_visits, get_visit, get_records_policy, get_conversation, send_message, provide_context, request_records_disclosure, await_reply, release_records</code>.</p>
+  <p>
+    The result shapes, including the refusal you will meet at a gated action, are in the
+    <a href="./conventions">exchange contract</a>. How a willing agent stays in the exchange
+    across a human handoff is in the <a href="./gap">research note</a>. A machine-readable
+    copy of this page is at <a href="./llms.txt">/llms.txt</a>.
+  </p>
+</section>
+</main>
+<footer class="wrap foot">
+  <p><b>3way.dev</b> — <a href="./">overview</a> · <a href="./install">install</a> · <a href="./demo/halden/">shop exchange</a> · <a href="./demo/clinic/">records exchange</a> · <a href="./gap">research</a> · <a href="./conventions">exchange contract</a></p>
+</footer>
+<script src="./assets/nav.js" defer></script>
+</body>
+</html>

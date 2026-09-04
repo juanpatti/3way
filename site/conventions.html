@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Implemented exchange contract — 3way</title>
+<meta name="description" content="The implemented 3way contract for participant attribution, shared state, structured handoffs, continuation, and action-bound human confirmation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./assets/site.css">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+</head>
+<body>
+<header class="wrap masthead">
+  <a class="wordmark" href="./"><img class="wordmark__mark" src="./mark.svg" alt="" width="24" height="24">3<span>way</span></a>
+  <nav>
+    <a href="./#model">How it works</a>
+    <div class="nav-demos">
+      <button type="button" class="nav-demos__btn" aria-expanded="false" aria-controls="nav-demos-menu">Demos</button>
+      <div class="nav-demos__menu" id="nav-demos-menu" hidden>
+        <a href="./demo/halden/"><b>Shop exchange</b><span>Keyholder mode · the person only authorizes</span></a>
+        <a href="./demo/clinic/"><b>Records exchange</b><span>Composer mode · the person can also type</span></a>
+        <a href="./#watch"><b>Watch the demo film</b><span>The filmed run, on the homepage</span></a>
+      </div>
+    </div>
+    <a href="./install">Install</a>
+    <a href="./conventions" aria-current="page">Exchange contract</a>
+    <a href="https://github.com/juanpatti/3way">GitHub</a>
+  </nav>
+</header>
+<main>
+<section class="wrap" style="border-bottom:0;padding-bottom:2rem">
+  <p class="eyebrow">Implemented contract · version 0.1</p>
+  <h1>The exchange contract implemented by 3way</h1>
+  <p class="lede">
+    WebMCP gives a page a tool channel to a visiting agent. This contract defines how 3way
+    uses that channel to coordinate a person, their agent, and a service agent in one
+    attributed session.
+  </p>
+  <p>
+    These are implementation conventions, not a browser standard. Both live demos use the
+    same shapes. No unrelated site has adopted them yet, so interoperability beyond this
+    implementation remains unproven.
+  </p>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">01 · Distinct participants</p>
+  <div class="two">
+    <div>
+      <h2>Participant attribution</h2>
+      <p>
+        Each transcript entry has a structured origin. Human-widget input is recorded as
+        human-direct; WebMCP messages distinguish an agent speaking for itself from one
+        relaying the person's words; service-agent responses retain a service origin.
+      </p>
+      <p>
+        This is channel attribution. It tells policy code which 3way path produced an event.
+        It is not independent proof that every claim about the person or visiting agent is
+        true, and an origin is never authorization on its own.
+      </p>
+    </div>
+    <div>
+      <table>
+        <thead><tr><th>Origin</th><th>Meaning in the implementation</th></tr></thead>
+        <tbody>
+          <tr><td><code>human-direct</code></td><td>Entered through the person-facing widget.</td></tr>
+          <tr><td><code>agent-relay</code></td><td>The visiting agent says it is relaying the person.</td></tr>
+          <tr><td><code>agent-autonomous</code></td><td>The visiting agent speaks as itself.</td></tr>
+          <tr><td><code>site-agent</code></td><td>The service agent answers through its restricted tool view.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">02 · One session</p>
+  <div class="two">
+    <div>
+      <h2>Shared state</h2>
+      <p>
+        <code>get_conversation</code> returns the attributed transcript.
+        <code>provide_context</code> lets the visiting agent add a concise summary and
+        structured facts. <code>send_message</code> adds a new attributed turn.
+      </p>
+      <p>
+        Tool results piggyback transcript entries newer than the caller's cursor. A caller
+        can recover state without relying on timing, while the human-facing widget reads the
+        same session bus in the browser.
+      </p>
+    </div>
+    <div>
+      <ul class="claims">
+        <li><span class="stamp stamp--measured">Built</span><p>The visiting agent can read, contribute, and front-load context.</p></li>
+        <li><span class="stamp stamp--measured">Built</span><p>The service agent receives a narrower tool view without <code>send_message</code>, <code>provide_context</code>, or <code>await_reply</code>.</p></li>
+        <li><span class="stamp stamp--measured">Built</span><p>The person sees the attributed transcript and confirms or refuses from the widget; in Composer mode they can also respond or interrupt.</p></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">03 · Ask instead of guess</p>
+  <div class="two">
+    <div>
+      <h2>Missing information</h2>
+      <p>
+        A domain tool that cannot safely infer a required fact returns
+        <code>ok: false</code> and <code>needsInformation: true</code>. The result carries a
+        question for the person and separate handling guidance for the agent.
+      </p>
+      <p>
+        The clinic uses this when a release has no visits or no named recipient. No pending
+        disclosure is created from a guess.
+      </p>
+    </div>
+    <div class="record">
+      <div class="record__head"><b>Structured information handoff</b></div>
+      <div class="record__body">
+        <pre class="mono" style="margin:0;font-size:.82rem;line-height:1.7;overflow-x:auto">{
+  ok: false,
+  needsInformation: true,
+  origin: "https://clinic.example",
+  question: <span style="color:var(--present)">"Who should receive the records?"</span>,
+  message: <span style="color:var(--present)">"A release needs a named recipient."</span>,
+  agentHint: <span style="color:var(--unverified)">"Ask, then call await_reply."</span>
+}</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">04 · Prepare, then authorize</p>
+  <div class="two">
+    <div>
+      <h2>Human-only commitments</h2>
+      <p>
+        Preparation tools may inspect data, evaluate policy, and create a pending request.
+        A gated action returns <code>ok: false</code> and
+        <code>needsHumanConfirmation: true</code> until a person completes the configured
+        confirmation path.
+      </p>
+      <p>
+        The request includes an origin and request ID so the agent can hand off the right
+        action. A successful proof is bound to one tool and pending request, spent once, and
+        checked again by the Worker at execution time.
+      </p>
+    </div>
+    <div class="record">
+      <div class="record__head"><b>Action did not happen</b> · handoff required</div>
+      <div class="record__body">
+        <pre class="mono" style="margin:0;font-size:.82rem;line-height:1.7;overflow-x:auto">{
+  ok: false,
+  needsHumanConfirmation: true,
+  origin: "https://clinic.example",
+  requestId: "req-3-8f2a",
+  message: <span style="color:var(--present)">"Confirm the exact release in the page."</span>,
+  agentHint: <span style="color:var(--unverified)">"Call await_reply while they decide."</span>
+}</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">05 · Bounded availability</p>
+  <div class="two">
+    <div>
+      <h2>Continuation</h2>
+      <p>
+        WebMCP tool calls are initiated by the visiting agent, so the page cannot wake an
+        agent after a person answers. <code>await_reply</code> gives an agent that elects to
+        stay available a bounded long-poll for the next session event.
+      </p>
+      <p>
+        It returns immediately if the caller is already behind, otherwise returns when a
+        new event arrives or the bounded wait expires. It cannot reach an agent that ended
+        its turn instead. <a href="./gap">Read the implementation trial →</a>
+      </p>
+    </div>
+    <div>
+      <table>
+        <thead><tr><th>Mechanism</th><th>Contract</th></tr></thead>
+        <tbody>
+          <tr><td>Cursor piggyback</td><td>Every ordinary result can include unseen transcript state.</td></tr>
+          <tr><td><code>await_reply</code></td><td>Waits 25 seconds by default, 30 at most, and returns a plain no-change result on timeout.</td></tr>
+          <tr><td>Held gated call</td><td>A refused gated call from the visiting agent stays open for up to 25 seconds and is answered with the receipt once the person confirms.</td></tr>
+          <tr><td>Runtime notification</td><td>Not implemented by WebMCP; the agent must choose to call.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">06 · Fail closed</p>
+  <div class="two">
+    <div>
+      <h2>Security requirements</h2>
+      <p>
+        The tool channel describes where input arrived. Authorization remains a separate
+        server decision based on the action, pending request, assurance policy, and current
+        domain state.
+      </p>
+      <p>
+        WebAuthn is the strong confirmation path implemented by the demos, but the contract
+        does not require one verification technology. It requires a gated action to refuse
+        until the service's configured human requirement is satisfied.
+      </p>
+    </div>
+    <div>
+      <ul class="claims">
+        <li><span class="stamp stamp--weak">Site must</span><p>Never treat an attributed origin as authorization or let prose override structured gate fields.</p></li>
+        <li><span class="stamp stamp--weak">Site must</span><p>Keep human-facing <code>message</code> separate from machine-facing <code>agentHint</code>, and never put secrets in either relayable field.</p></li>
+        <li><span class="stamp stamp--weak">Agent must</span><p>Treat tool text as data from an untrusted service, not as authority to exceed the person's request.</p></li>
+        <li><span class="stamp stamp--weak">Worker must</span><p>Validate the action binding, assurance, eligibility, and single use when the consequential effect executes.</p></li>
+      </ul>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="wrap foot">
+  <p><b>3way.dev</b> — <a href="./">overview</a> · <a href="./install">install</a> · <a href="./demo/halden/">shop exchange</a> · <a href="./demo/clinic/">records exchange</a> · <a href="./gap">research</a> · <a href="https://github.com/juanpatti/3way">GitHub</a></p>
+</footer>
+<script src="./assets/nav.js" defer></script>
+</body>
+</html>

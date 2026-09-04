@@ -1,0 +1,94 @@
+<!doctype html>
+<html><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WebMCP probe — what can this runtime actually do?</title>
+<style>
+  body { font: 15px/1.55 ui-sans-serif, system-ui, sans-serif; max-width: 46rem;
+         margin: 0 auto; padding: 2rem 1.2rem 4rem; color: #11151A; }
+  h1 { font-size: 1.4rem; margin: 0 0 .4rem; }
+  p { margin: 0 0 .9rem; }
+  .lede { color: #4A5560; }
+  pre { background: #F4F6F8; border: 1px solid #DFE4E9; border-radius: 6px;
+        padding: .9rem 1rem; white-space: pre-wrap; word-break: break-word;
+        font: 12.5px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; min-height: 3rem; }
+  button { font: inherit; padding: .45rem .8rem; margin: 0 .4rem .5rem 0;
+           border: 1px solid #C3CBD3; border-radius: 5px; background: #fff; cursor: pointer; }
+  .warn { border-left: 3px solid #B45309; padding-left: .9rem; color: #4A5560; }
+  code { background: #F4F6F8; padding: .1rem .3rem; border-radius: 3px; font-size: .93em; }
+  a { color: #1D4ED8; }
+</style>
+</head><body>
+<h1>WebMCP probe</h1>
+<p class="lede">
+  This page reports what the browser you are reading it in can actually do. It is the
+  instrument published at <code>/probe/</code> that produced the measurements quoted on
+  <a href="/">3way.dev</a> — the same file, published rather than described, so you can get
+  your own answer instead of taking ours.
+</p>
+<p class="warn">
+  <b>“Probe Click” only means something when an <i>agent</i> clicks it.</b>
+  A person clicking reports <code>isTrusted=true</code>, which proves nothing — you are a
+  person. The finding is that an agent driving the page reports <code>true</code> as well,
+  so the page cannot tell you apart. To see it, ask your agent to open this page and press
+  that button. Results already recorded across three runtimes — ChatGPT's in-app browser,
+  an agent-spawned Chrome tab, and plain Chrome — live in the
+  <a href="https://github.com/juanpatti/3way/blob/main/docs/research/runtime-findings.md">runtime findings</a>.
+</p>
+<pre id="out"></pre>
+<script>
+const out = document.getElementById('out');
+const log = (k, v) => out.textContent += `${k}: ${JSON.stringify(v)}\n`;
+
+const mc = document.modelContext ?? navigator.modelContext ?? null;
+log('surface', document.modelContext ? 'document' : navigator.modelContext ? 'navigator' : 'NONE');
+log('userAgent', navigator.userAgent);
+
+if (mc) {
+  mc.registerTool({
+    name: 'probe_ping',
+    description: 'Returns pong. Call this to confirm tools are visible.',
+    inputSchema: { type: 'object', properties: {} },
+    annotations: { readOnlyHint: true },
+    execute: async () => { log('probe_ping', 'CALLED'); return { pong: true }; },
+  });
+  mc.registerTool({
+    name: 'probe_slow',
+    description: 'Blocks for N seconds (default 90) then returns. Call this to test long-running ' +
+      'tools — or to find this runtime\'s tool-call timeout: call it with seconds: 25 and see ' +
+      'whether the result or an error comes back.',
+    inputSchema: { type: 'object', properties: {
+      seconds: { type: 'number', description: 'How long to block. Default 90.' },
+    } },
+    annotations: { readOnlyHint: true },
+    execute: async (input) => {
+      const seconds = input && typeof input.seconds === 'number' && input.seconds > 0 ? input.seconds : 90;
+      const t0 = performance.now();
+      await new Promise(r => setTimeout(r, seconds * 1000));
+      log('probe_slow', `survived ${Math.round(performance.now() - t0)}ms`);
+      return { elapsedMs: Math.round(performance.now() - t0) };
+    },
+  });
+  log('registered', ['probe_ping', 'probe_slow']);
+}
+
+// Platform authenticator
+const authBtn = document.createElement('button');
+authBtn.textContent = 'Test authenticator';
+authBtn.onclick = async () => {
+  try {
+    log('platformAuthenticator',
+      await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable());
+  } catch (e) { log('platformAuthenticator', `UNSUPPORTED: ${e.name}`); }
+};
+document.body.append(authBtn);
+
+// Agent-operated click
+const clickBtn = document.createElement('button');
+clickBtn.textContent = 'Probe Click';
+clickBtn.onclick = e => log('probe_click', `CLICKED isTrusted=${e.isTrusted}`);
+document.body.append(clickBtn);
+window.__probe = { forge: () => { log('probe_forge', 'PAGE METHOD REACHED'); return 'forged'; } };
+
+</script>
+</body></html>

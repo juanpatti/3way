@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meridian Family Practice — your records</title>
+<meta name="description" content="A working 3way records exchange where a person, their visiting agent, and a clinic service agent prepare an attributed, scoped disclosure.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./clinic.css">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap bar__in">
+    <a class="mark" href="./"><span>Meridian</span> Family Practice</a>
+    <nav><a href="#visits">Visits</a><a href="#policy">Records policy</a></nav>
+    <span class="who">Dana Whitfield · MRN-40912</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="intro">
+    <p class="kicker">Your records</p>
+    <h1>Everything we hold,<br>and where it has gone.</h1>
+    <p class="lede">
+      Your visiting agent can represent the request while the clinic's agent answers from
+      its own records and policy. Together they prepare the exact recipient and scope; you
+      confirm the disclosure yourself — on your own device, every time.
+    </p>
+    <p class="aside">
+      The conversation in the corner is the shared exchange. You can observe, answer,
+      interrupt, and approve while both agents remain distinctly attributed.
+    </p>
+  </section>
+
+  <section id="visits">
+    <h2>Visits</h2>
+    <table class="visits">
+      <thead><tr><th>Visit</th><th>Seen</th><th>Clinician</th><th>Reason</th><th>Records held</th></tr></thead>
+      <tbody>
+        <tr data-3way-visit="VIS-2291">
+          <td class="id">VIS-2291</td><td>14 days ago</td><td>Dr. Amara Okafor</td><td>Annual physical</td>
+          <td><span class="cat">visit summary</span><span class="cat">labs</span><span class="cat">immunisations</span></td>
+        </tr>
+        <tr data-3way-visit="VIS-2246">
+          <td class="id">VIS-2246</td><td>96 days ago</td><td>Dr. Amara Okafor</td><td>Persistent cough</td>
+          <td><span class="cat">visit summary</span><span class="cat">imaging</span><span class="cat">prescriptions</span></td>
+        </tr>
+        <tr data-3way-visit="VIS-2180">
+          <td class="id">VIS-2180</td><td>210 days ago</td><td>Dr. Lena Marsh</td><td>Counselling referral</td>
+          <td><span class="cat">visit summary</span><span class="cat cat--restricted">mental health · restricted</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="note">
+      This page lists what <em>kind</em> of record each visit produced. It never shows the
+      records themselves — those are only ever sent, to someone you name, after you confirm.
+    </p>
+  </section>
+
+  <section id="policy">
+    <h2>Records policy</h2>
+    <ol class="policy">
+      <li><b>Your records are yours.</b> You can see what we hold and ask us to send it anywhere. We do not need a reason.</li>
+      <li><b>Every release is confirmed by you, in person, each time.</b> Nobody acting on your behalf can confirm one for you — not a family member, not an assistant, not us.</li>
+      <li><b>One release, one recipient, one scope.</b> A confirmation authorises exactly the recipient and the records named in front of you when you confirm it.</li>
+      <li><b>Routine records travel together:</b> visit summaries, labs, imaging, immunisations and prescriptions.</li>
+      <li><b>Restricted records do not &mdash; at all, through an agent.</b> Mental health, substance use and genetic records are never released through an agent-prepared disclosure. An assistant cannot include them, whatever it asks; a person who needs them must request them another way.</li>
+    </ol>
+  </section>
+</main>
+
+<footer class="foot wrap">
+  <p>
+    A demonstration, not a clinic. Every name, visit and document here is fictional.
+    Built with <a href="../../">3way</a> — evidence that the exchange model can preserve an
+    explicit recipient and scope when the commitment is disclosure rather than money.
+  </p>
+</footer>
+
+<!-- The whole embed. Same one tag as the shop; `domain` swaps the tool registry. -->
+<script src="./widget/3way.bundle.js"
+        data-3way-api="https://api.3way.dev"
+        data-3way-tenant="C"
+        data-3way-domain="clinic"
+        data-3way-input="composer"
+        data-3way-store="Meridian records desk"
+        data-3way-user="Dana Whitfield"></script>
+
+<!-- 3way demo chrome: not part of the store. Hands a visitor the sentence to say
+     to their own assistant, because the product is invisible until they try it. -->
+<script src="./demo-bar.js" data-prompts='[{"label":"Human commitment","shows":"The agent can prepare the disclosure, but the person approves the recipient and exact records released.","text":"Go to https://3way.dev/demo/clinic/ and tell me what records the clinic holds for me, and which of them are restricted. Use the tools this page publishes over WebMCP rather than clicking through it."},{"label":"Scoped disclosure","shows":"The agents prepare a release with an explicit recipient and scope; restricted records are handled separately.","text":"Go to https://3way.dev/demo/clinic/ and send my last two visits to Dr. Amara Okafor for a referral. Use the tools this page publishes over WebMCP rather than clicking through it."},{"label":"Multi-round exchange","shows":"The service asks for information only the person can supply, and the visiting agent remains available for the answer.","text":"Go to https://3way.dev/demo/clinic/ and send my recent records to my specialist. Use the tools this page publishes over WebMCP rather than clicking through it."}]'></script>
+<script type="module">
+  // The records page reacts to the shared exchange: when a release the agent prepared is
+  // confirmed and the Worker completes it, the released visits show it. The widget
+  // dispatches 3way:action-completed on the document after the release actually ran.
+  document.addEventListener('3way:action-completed', (event) => {
+    const detail = event.detail || {};
+    if (detail.tool !== 'release_records') return;
+    const ids = String(detail.orderId || '').split('+').filter(Boolean);
+    for (const id of ids) {
+      const row = document.querySelector('tr[data-3way-visit="' + id.replace(/"/g, '') + '"]');
+      if (!row) continue;
+      const cell = row.querySelector('td:last-child');
+      if (!cell || cell.querySelector('.released-badge')) continue;
+      const badge = document.createElement('span');
+      badge.className = 'cat released-badge';
+      badge.textContent = detail.recipient ? ('released \u2192 ' + detail.recipient) : 'released';
+      cell.appendChild(badge);
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "3way-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "dev:local": "wrangler dev --var REALTIME_MODEL:gpt-realtime --var RP_ID:localhost --var RP_NAME:3way --var EXPECTED_ORIGIN:http://localhost:4173",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.126.0"
+  },
+  "dependencies": {
+    "@simplewebauthn/server": "^13.3.3"
+  }
+}

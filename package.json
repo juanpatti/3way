@@ -1,0 +1,51 @@
+{
+  "name": "3way",
+  "description": "An attributed three-party exchange with verifiable human commitments, built on WebMCP.",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25",
+    "npm": ">=11 <12"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/juanpatti/3way.git"
+  },
+  "homepage": "https://3way.dev",
+  "bugs": {
+    "url": "https://github.com/juanpatti/3way/issues"
+  },
+  "keywords": [
+    "webmcp",
+    "ai-agents",
+    "multi-party",
+    "human-in-the-loop",
+    "webauthn"
+  ],
+  "workspaces": [
+    "packages/*",
+    "worker"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "npm run build -w packages/widget",
+    "typecheck": "tsc -p packages/widget --noEmit && npm run typecheck:worker",
+    "verify": "npm run typecheck && npm test && npm run site",
+    "deploy": "npm run site && wrangler pages deploy dist-site && npm run deploy -w worker",
+    "typecheck:worker": "if [ -d worker/src ]; then tsc -p worker --noEmit; else echo 'typecheck: worker sources are absent — skipping'; fi",
+    "site": "npm run build && ./scripts/build-site.sh",
+    "preview": "npm run site && npx --yes serve dist-site -l 4173",
+    "dev:worker": "npm run dev:local -w worker",
+    "site:local": "THREEWAY_API_BASE=http://localhost:8787 npm run site",
+    "preview:local": "npm run site:local && npx --yes serve dist-site -l 4173"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "@cloudflare/workers-types": "^5.20260826.1",
+    "vitest": "^4.1.11",
+    "jsdom": "^30.0.1",
+    "tsup": "^8.5.1"
+  }
+}

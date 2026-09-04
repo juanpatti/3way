@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Install — 3way</title>
+<meta name="description" content="Add the 3way exchange layer to a WebMCP site with a self-hosted widget and a service-owned policy and action backend.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./assets/site.css">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+</head>
+<body>
+<header class="wrap masthead">
+  <a class="wordmark" href="./"><img class="wordmark__mark" src="./mark.svg" alt="" width="24" height="24">3<span>way</span></a>
+  <nav>
+    <a href="./#model">How it works</a>
+    <div class="nav-demos">
+      <button type="button" class="nav-demos__btn" aria-expanded="false" aria-controls="nav-demos-menu">Demos</button>
+      <div class="nav-demos__menu" id="nav-demos-menu" hidden>
+        <a href="./demo/halden/"><b>Shop exchange</b><span>Keyholder mode · the person only authorizes</span></a>
+        <a href="./demo/clinic/"><b>Records exchange</b><span>Composer mode · the person can also type</span></a>
+        <a href="./#watch"><b>Watch the demo film</b><span>The filmed run, on the homepage</span></a>
+      </div>
+    </div>
+    <a href="./install" aria-current="page">Install</a>
+    <a href="./conventions">Exchange contract</a>
+    <a href="https://github.com/juanpatti/3way">GitHub</a>
+  </nav>
+</header>
+<main>
+<section class="wrap" style="border-bottom:0;padding-bottom:2rem">
+  <p class="eyebrow">Install</p>
+  <h1>Add the exchange layer to a WebMCP site.</h1>
+  <p class="lede">
+    Serve the bundled widget from your own origin and point it at the service that provides
+    policy, domain data, the site agent, and confirmation endpoints.
+  </p>
+  <p>
+    The default embed needs no framework or page build step. Put
+    <code>3way.bundle.js</code> on your origin, add one script tag, and the exchange widget
+    mounts itself.
+  </p>
+  <div class="record" style="max-width:46rem;margin-top:1.6rem">
+    <div class="record__head"><b>The whole embed</b></div>
+    <div class="record__body">
+      <pre class="mono" style="margin:0;font-size:.84rem;line-height:1.75;overflow-x:auto">&lt;script src=<span style="color:var(--present)">"/js/3way.bundle.js"</span>
+        data-3way-api=<span style="color:var(--present)">"https://api.yourstore.com"</span>
+        data-3way-store=<span style="color:var(--present)">"Yourstore Support"</span>&gt;&lt;/script&gt;</pre>
+    </div>
+  </div>
+  <p style="margin-top:1.2rem;font-size:.92rem;color:var(--ink-soft)">
+    <span class="stamp stamp--measured">Measured</span>
+    The <a href="./demo/halden/">live demo</a> uses this tag plus two optional attributes,
+    a display name and the interaction mode — one tag, 18 tools registered, policy
+    fetched at mount.
+  </p>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">Where to host it</p>
+  <div class="two">
+    <div>
+      <h2>Your consent gate should not load from someone else's server.</h2>
+      <p>
+        Stripe can tell you to load <code>js.stripe.com</code> because Stripe is the
+        counterparty — you are trusting them by definition. Here <b>you</b> are the
+        counterparty, and this widget enforces your gate. A third-party script tag that
+        someone else can change is a script that can be changed to remove the gate.
+      </p>
+      <p>
+        So the recommendation is the boring one: <b>download the file and serve it from
+        your own origin.</b> Your gate, your origin, your control.
+      </p>
+    </div>
+    <div>
+      <h3 style="margin-bottom:.5rem">To try it without hosting anything</h3>
+      <p style="font-size:.95rem">
+        There is a versioned copy here. It is fine for a prototype and it is pinned with
+        Subresource Integrity, so a swapped file fails to load rather than running:
+      </p>
+      <div class="record">
+        <div class="record__head"><b>Hosted</b> · for trying it out</div>
+        <div class="record__body">
+          <pre class="mono" style="margin:0;font-size:.76rem;line-height:1.7;overflow-x:auto;white-space:pre-wrap;word-break:break-all">&lt;script src="https://3way.dev/v1/3way.bundle.js"
+        integrity="<span style="color:var(--unverified)">{{SRI}}</span>"
+        crossorigin="anonymous"
+        data-3way-api="https://api.yourstore.com"&gt;&lt;/script&gt;</pre>
+        </div>
+      </div>
+      <p style="font-size:.88rem;color:var(--ink-soft);margin-top:.9rem">
+        Versioned on purpose. An unversioned URL means any change silently reaches every
+        page that ever embedded it.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">Why the policy isn't in the tag</p>
+  <div class="two">
+    <div>
+      <h2>Because a page must not be able to disagree with its own gate.</h2>
+      <p>
+        The widget needs your returns policy — the prose a person reads and the rules the
+        gate enforces. Those are objects, and an attribute is a string, so the only honest
+        route to one tag is to serve them from your API.
+      </p>
+      <p>
+        That is where they belonged anyway. Your server is already the authoritative gate's
+        source of truth for the same rules. Keeping one copy is what stops a page showing
+        someone one policy while the action enforces another.
+      </p>
+      <p>
+        If the config cannot be fetched, <b>nothing mounts</b> and the console says why.
+        A widget that quietly fell back to a default policy would be displaying terms that
+        are not yours.
+      </p>
+    </div>
+    <div>
+      <table>
+        <thead><tr><th>Attribute</th><th></th></tr></thead>
+        <tbody>
+          <tr><td><code>data-3way-api</code></td><td><b>Required.</b> Where your API lives. Its absence is how a page opts out of auto-mounting.</td></tr>
+          <tr><td><code>data-3way-store</code></td><td>How your agent is named in the transcript. Defaults to “Store”.</td></tr>
+          <tr><td><code>data-3way-user</code></td><td>Display name for the signed-in person. Nothing security-relevant reads it.</td></tr>
+          <tr><td><code>data-3way-stance</code></td><td>Which personality preset to use. Overrides the server default.</td></tr>
+          <tr><td><code>data-3way-tenant</code></td><td>Which store a shared backend should answer as.</td></tr>
+          <tr><td><code>data-3way-input</code></td><td>Interaction mode. Omit it (or set anything else) for Keyholder mode: no text box, the person only authorizes. Set to <code>composer</code> to give the person a text box instead.</td></tr>
+          <tr><td><code>data-3way-domain</code></td><td>Which tool registry to mount. Set to <code>clinic</code> for the records domain; omit for the default shop.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">What your API answers</p>
+  <div class="two">
+    <div>
+      <h2>One endpoint.</h2>
+      <p>
+        <code>GET /api/config</code>, returning the policy the widget will show and the
+        rules its gate will read. Public by design — a returns policy is published anyway.
+      </p>
+      <p>
+        Everything else is the conventions: the tool names, the origins, and the refusal
+        shape. <a href="./conventions">Read them →</a>
+      </p>
+    </div>
+    <div>
+      <div class="record">
+        <div class="record__head"><b>GET /api/config</b></div>
+        <div class="record__body">
+          <pre class="mono" style="margin:0;font-size:.82rem;line-height:1.7;overflow-x:auto">{
+  policy: {
+    prose: <span style="color:var(--ink-soft)">"…what a person reads"</span>,
+    rules: { <span style="color:var(--unverified)">requiresHumanDirect</span>: [ … ] }
+  },
+  stances: { … },
+  storeAgentName: "Yourstore Support"
+}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">Full control</p>
+  <h2>Or mount it yourself.</h2>
+  <p class="lede">
+    A tag with no <code>data-3way-api</code> is inert, so nothing auto-mounts and
+    <code>ThreeWay.mount()</code> takes every option directly — useful when the policy is
+    already in the page, or when you need a custom mount point.
+  </p>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">Run locally</p>
+  <h2>Start the Worker and demos on matching origins.</h2>
+  <p>
+    For the site's Realtime agent only, copy the local secret template and enter an OpenAI
+    API key. WebMCP registration, deterministic tools, and tests do not require a live key.
+  </p>
+  <pre class="mono"><code>npm ci
+cp worker/.dev.vars.example worker/.dev.vars</code></pre>
+  <p>Set <code>OPENAI_API_KEY</code> in <code>worker/.dev.vars</code>. In terminal one, run:</p>
+  <pre class="mono"><code>npm run dev:worker</code></pre>
+  <p>In terminal two, run:</p>
+  <pre class="mono"><code>npm run preview:local</code></pre>
+  <p>Open:</p>
+  <pre class="mono"><code>http://localhost:4173/demo/halden/
+http://localhost:4173/demo/clinic/</code></pre>
+  <p>
+    WebAuthn requires the page origin and the Worker's <code>EXPECTED_ORIGIN</code> to
+    match, which is why the port is fixed.
+  </p>
+</section>
+</main>
+<footer class="wrap foot">
+  <p><b>3way.dev</b> — <a href="./">overview</a> · <a href="./demo/halden/">shop exchange</a> · <a href="./demo/clinic/">records exchange</a> · <a href="./gap">research</a> · <a href="./conventions">exchange contract</a></p>
+</footer>
+<script src="./assets/nav.js" defer></script>
+</body>
+</html>

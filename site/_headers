@@ -1,0 +1,14 @@
+# Cloudflare Pages headers.
+#
+# The widget ships from a STABLE filename on purpose — the embed snippet is meant to be
+# copy-pasteable and not change every build — so without this a returning visitor keeps
+# executing whatever they cached. Pages defaults to max-age=14400, four hours, which is
+# four hours of a judge reloading and still seeing the previous deploy.
+#
+# Found the honest way: a fix that was correctly deployed looked like a code bug for ten
+# minutes, because the page under test was still running the build before it.
+#
+# no-cache does not mean "never cache" — it means "revalidate before use". An unchanged
+# asset costs a 304. For a demo site at this size that trade is free.
+/*
+  Cache-Control: no-cache

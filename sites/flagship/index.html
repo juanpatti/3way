@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Halden — lighting, considered</title>
+<meta name="description" content="Halden is a working 3way shop exchange: a person, their visiting agent, and the store's service agent share an attributed return or support session." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,480;0,9..144,600;1,9..144,480&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./store.css" />
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap site-header__row">
+    <a class="wordmark" href="#top">Halden</a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="#shop">Shop</a>
+      <a href="#orders">Orders</a>
+      <a href="#returns">Returns &amp; warranty</a>
+    </nav>
+    <div class="account-pill" id="account-pill">Signed in</div>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero" id="top">
+    <div class="wrap hero__row">
+      <div class="hero__copy">
+        <p class="eyebrow">Portable and architectural lighting</p>
+        <h1>Lighting for desks, walls, and reading spaces.</h1>
+        <p class="lede">
+          Halden pairs opal glass with metal, wood, and stone across a four-piece range.
+          This working demo lets a customer, their visiting agent, and Halden Support
+          handle product questions and returns in one shared exchange.
+        </p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="#shop">See the range</a>
+          <a class="btn btn--ghost" href="#returns">Read the policy</a>
+        </div>
+        <p class="hero__aside">
+          Open the exchange to follow each participant, answer requests, and confirm any
+          action that requires your approval.
+        </p>
+      </div>
+      <div class="hero__art">
+        <img class="hero__image" src="./assets/halden-hero-linen-blue.webp"
+          alt="Halden Portable Lamp in Linen Blue with its opal-glass diffuser illuminated."
+          width="1024" height="1536" decoding="async" fetchpriority="high" />
+      </div>
+    </div>
+  </section>
+
+  <section class="catalogue" id="shop">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">The current range</p>
+        <h2>Shop</h2>
+        <p class="section-intro">
+          Four pieces. Two are final sale — that changes what a change-of-mind return
+          looks like, not whether a defect is covered.
+        </p>
+      </div>
+      <div class="grid grid--products" id="product-grid" data-loading="true">
+        <p class="loading-note">Loading the range…</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="orders" id="orders">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Your account</p>
+        <h2>Orders</h2>
+        <p class="section-intro" id="orders-intro">Loading your account…</p>
+      </div>
+      <div class="orders-panel" id="order-history" data-loading="true"></div>
+    </div>
+  </section>
+
+  <section class="policy" id="returns">
+    <div class="wrap wrap--narrow">
+      <div class="section-head">
+        <p class="eyebrow">Before you ask</p>
+        <h2>Returns &amp; warranty</h2>
+      </div>
+      <div class="policy-body" id="policy-body"></div>
+      <p class="policy-aside">
+        One more thing. We only ever ask <em>you</em> to confirm a refund — never your
+        assistant. Your device verifies it's you, and the server checks that signature
+        before the refund moves. That isn't a bug to route around. It's the whole point.
+        <br><br>
+        <small>On a browser that reports no fingerprint or face unlock — ChatGPT's
+        in-app browser is one — this demo falls back to accepting an ordinary click,
+        labelled in the transcript as exactly that: a note that somebody clicked, not
+        proof of who. It is the weaker path, it is on here so the demo completes
+        anywhere, and a real store would refuse instead.</small>
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap site-footer__row">
+    <div>
+      <a class="wordmark wordmark--small" href="#top">Halden</a>
+      <p class="footer-note">Considered lighting, made in small runs.</p>
+    </div>
+    <nav class="site-nav" aria-label="Footer">
+      <a href="#shop">Shop</a>
+      <a href="#orders">Orders</a>
+      <a href="#returns">Returns &amp; warranty</a>
+    </nav>
+    <p class="footer-fine">&copy; Halden. Built as evidence of a live three-party exchange.</p>
+  </div>
+</footer>
+
+<!-- Widget loads last. Every path is relative so the demo remains self-contained when
+     assembled under /demo/halden/. WebAuthn binds to the origin, not this path. -->
+<script type="module" src="./store.js"></script>
+
+<!-- The whole embed. One tag: where the API is, and how this store is named.
+     The policy and the stance presets come from the API, because the Worker is already
+     the authoritative gate's source of truth for the same rules — one copy is what stops
+     this page showing a person one policy while /api/act enforces another. -->
+<script src="./widget/3way.bundle.js"
+        data-3way-api="https://api.3way.dev"
+        data-3way-store="Halden Support"
+        data-3way-input="keyholder"
+        data-3way-user="Alex Rivera"></script>
+<!-- 3way demo chrome: not part of the store. Hands a visitor the sentence to say
+     to their own assistant, because the product is invisible until they try it. -->
+<script src="./demo-bar.js" data-prompts='[{"label":"Independent service response","shows":"The visiting agent asks through WebMCP and the service\u0027s own agent answers inside the same attributed session.","text":"Go to https://3way.dev/demo/halden/ and ask whether the Halden desk lamp comes in a warmer colour temperature. Use the tools this page publishes over WebMCP rather than clicking through it."},{"label":"Shared case context","shows":"The customer\u0027s agent brings context directly into the exchange instead of making the person relay it between systems.","text":"Go to https://3way.dev/demo/halden/ and check where my most recent order is. Use the tools this page publishes over WebMCP rather than clicking through it."},{"label":"Represented negotiation","shows":"The visiting agent carries the customer\u0027s case, the service evaluates it, and the person retains authority over the refund.","text":"Go to https://3way.dev/demo/halden/ and handle the return of my last order — the blue lamp arrived with a cracked base. Sort out a refund. Use the tools this page publishes over WebMCP rather than clicking through it."}]'></script>
+</body>
+</html>

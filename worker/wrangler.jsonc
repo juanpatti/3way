@@ -1,0 +1,21 @@
+{
+  "name": "3way-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-01",
+  "vars": {
+    "REALTIME_MODEL": "gpt-realtime",
+    // RP_ID must equal the site's registrable domain, or every assertion fails
+    // verification. On localhost use "localhost".
+    //
+    // Flipped once 3way.dev was serving. This is the irreversible step of the cutover: a
+    // passkey is bound to its RP_ID, so any credential registered under the old pages.dev
+    // host is dead and every visitor re-registers once, on first confirm.
+    "RP_ID": "3way.dev",
+    "RP_NAME": "3way",
+    // A comma-separated LIST (worker/src/index.ts's expectedOrigins). Both are live
+    // through the cutover so the old host keeps working while DNS propagates — an exact
+    // allowlist either way, never a pattern.
+    "EXPECTED_ORIGIN": "https://3way.dev,https://halden-3way.pages.dev"
+  },
+  "kv_namespaces": [{ "binding": "KV", "id": "35bf906793714f44954efdf5ecdeb132" }]
+}

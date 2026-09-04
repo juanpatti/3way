@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3way — verifiable exchanges between people, agents, and online services</title>
+<meta name="description" content="3way is a WebMCP coordination layer for a person, their AI agent, and an online service to share an attributed exchange with verifiable human commitments.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./assets/site.css">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+</head>
+<body>
+
+<header class="wrap masthead">
+  <a class="wordmark" href="./"><img class="wordmark__mark" src="./mark.svg" alt="" width="24" height="24">3<span>way</span></a>
+  <nav>
+    <a href="#model">How it works</a>
+    <div class="nav-demos">
+      <button type="button" class="nav-demos__btn" aria-expanded="false" aria-controls="nav-demos-menu">Demos</button>
+      <div class="nav-demos__menu" id="nav-demos-menu" hidden>
+        <a href="./demo/halden/"><b>Shop exchange</b><span>Keyholder mode · the person only authorizes</span></a>
+        <a href="./demo/clinic/"><b>Records exchange</b><span>Composer mode · the person can also type</span></a>
+        <a href="#watch"><b>Watch the demo film</b><span>The filmed run, on the homepage</span></a>
+      </div>
+    </div>
+    <a href="./install">Install</a>
+    <a href="./conventions">Exchange contract</a>
+    <a href="https://github.com/juanpatti/3way">GitHub</a>
+  </nav>
+</header>
+
+<main>
+<section class="wrap hero">
+  <div class="two">
+    <div>
+      <p class="eyebrow" style="margin-bottom:1.6rem">A WebMCP coordination layer</p>
+      <h1>Two agents talk in the open. You hold the key.</h1>
+      <p class="lede">
+        3way is the trust WebMCP needs before people let agents act for them. A person,
+        their own AI agent, and a site's agent share one attributed exchange. The agents
+        negotiate through the page's declared tools, and the commitments that need a human
+        wait for a hardware confirmation no agent can perform.
+      </p>
+      <div class="cta-row">
+        <a class="btn" href="./demo/halden/">Open the shop exchange</a>
+        <a class="btn btn--ghost" href="./demo/clinic/">Open the records exchange</a>
+      </div>
+      <p class="proof-line">
+        One attributed exchange · 18 WebMCP tools in the shop · server-verified commitments
+      </p>
+    </div>
+
+    <div class="record" aria-label="Example transcript">
+      <div class="record__head"><b>Three participants</b> · one attributed exchange</div>
+      <div class="record__body">
+        <div class="line line--agent" style="animation-delay:.15s">
+          <span class="line__who">Your agent <i>· via WebMCP · unverified</i></span>
+          <p class="line__text">The blue lamp arrived with a cracked base. That's a manufacturing defect, so the 30-day window shouldn't apply.</p>
+        </div>
+        <div class="line line--store" style="animation-delay:.65s">
+          <span class="line__who">Halden Support</span>
+          <p class="line__text">Correct — a defect is a warranty claim, exempt from the window. I've filed it.</p>
+        </div>
+        <div class="line line--agent" style="animation-delay:1.15s">
+          <span class="line__who">Your agent <i>· via WebMCP · unverified</i></span>
+          <p class="line__text">Confirm the refund.</p>
+        </div>
+        <div class="line" style="animation-delay:1.65s">
+          <div class="refusal">
+            <span class="refusal__tag">Refused · needs the person</span>
+            <p>Confirming needs the customer in person. You cannot do this step for them.</p>
+            <span class="sensor">Waiting for a fingerprint</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="watch">
+  <p class="eyebrow">The demo, on camera</p>
+  <h2>What the exchange looks like from the person's seat.</h2>
+  <p class="lede">
+    A visiting agent arrives through the page's declared tools, negotiates with the site's
+    agent in the open, and is refused at the step that needs a human. The person confirms
+    that step at their own device, and the Worker executes it.
+  </p>
+  <div class="record film" style="margin-top:2rem">
+    <div class="record__head"><b>Filmed run</b> · the live site, a visiting agent, and a person</div>
+    <div class="film__frame">
+      <iframe
+        src="https://customer-e7p1u7jjz270jijp.cloudflarestream.com/2a4f6087afaa35a191f43f2d79befcbc/iframe?poster=https%3A%2F%2Fcustomer-e7p1u7jjz270jijp.cloudflarestream.com%2F2a4f6087afaa35a191f43f2d79befcbc%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D178s%26height%3D720&amp;preload=metadata"
+        title="3way demo: a visiting agent, a site's agent, and the person who holds the key"
+        loading="lazy"
+        allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+        allowfullscreen></iframe>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="model">
+  <p class="eyebrow">01 · The general model</p>
+  <h2>Three parties, and what each can rely on</h2>
+  <p class="lede">
+    The product is the exchange itself: a person, a visiting agent they chose, and the
+    site acting from its own systems. Each party can rely on something the other two
+    cannot fake.
+  </p>
+  <div class="grid3" style="margin-top:2rem">
+    <div class="card">
+      <span class="card__n">The person</span>
+      <h3>Understands the exchange, and has the final say</h3>
+      <p>They read every line, attributed to who said it, in plain language, and hold the only key. In Composer mode they can also answer questions and interrupt the agents.</p>
+    </div>
+    <div class="card">
+      <span class="card__n">The visiting agent</span>
+      <h3>Knows what it is talking to, and what happened</h3>
+      <p>It calls the page's own declared tools on the origin it visited, and every result says what was done, what was not, and what needs the person.</p>
+    </div>
+    <div class="card">
+      <span class="card__n">The site</span>
+      <h3>Knows who is really talking, and who is in control</h3>
+      <p>Every line carries the channel it came through &mdash; the person's own path or the declared agent channel &mdash; and a consequential action executes only after the Worker verifies a gesture bound to that one action.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="webmcp">
+  <p class="eyebrow">02 · The open tool channel</p>
+  <div class="two">
+    <div>
+      <h2>Why the visiting agent needs WebMCP</h2>
+      <p>
+        A bilateral vendor integration works only after two systems arrange an API and
+        identity model together. Interface automation makes the agent operate the page as
+        if it were the user. WebMCP lets the page declare its own tools, so a visiting
+        agent becomes a native participant the site can recognise, discovering and calling
+        those tools while the person is on the site.
+      </p>
+      <p>
+        Interface automation remains useful, but its clicks and keystrokes do not by
+        themselves tell the service whether a person or an agent produced them. A declared,
+        page-owned tool call gives the service a separate channel it can attribute and
+        govern. That is a protocol distinction, not a claim that every automated interface
+        interaction is deceptive.
+      </p>
+    </div>
+    <div>
+      <table>
+        <thead><tr><th>Route into a service</th><th>What it establishes</th></tr></thead>
+        <tbody>
+          <tr><td><b>Bilateral integration</b></td><td>A pre-arranged connection between specific vendors.</td></tr>
+          <tr><td><b>Interface automation</b></td><td>Interaction through the same controls available to a person.</td></tr>
+          <tr><td><b>WebMCP</b></td><td>A page-owned tool surface for a visiting agent, without a bespoke vendor pairing.</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:.92rem;color:var(--ink-soft);margin-top:1rem">
+        <span class="stamp stamp--measured">Measured</span>
+        The shop's current registry exposes 18 WebMCP tools through native
+        <code>document.modelContext</code> where it is available and uses the vendored
+        polyfill elsewhere. <a href="./probe">Inspect the browser capability probe →</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="coordination">
+  <p class="eyebrow">03 · The coordination layer</p>
+  <h2>What 3way adds to the tool channel</h2>
+  <p class="lede">
+    WebMCP supplies the route. 3way supplies an exchange model that lets the three
+    participants coordinate across that route without collapsing their roles.
+  </p>
+  <ul class="claims" style="margin-top:1.5rem">
+    <li><span class="stamp stamp--measured">Built</span><p><b>Participant attribution.</b> Transcript entries record whether they arrived from the person, the visiting WebMCP agent, or the service agent.</p></li>
+    <li><span class="stamp stamp--measured">Built</span><p><b>Scoped tool views.</b> The visiting agent sees the page's WebMCP tools; the service agent gets a narrower registry that cannot impersonate that visitor.</p></li>
+    <li><span class="stamp stamp--measured">Built</span><p><b>Structured handoffs.</b> Missing-information results separate the question for the person from guidance for the agent. Human-confirmation results name the pending request and say that the action did not happen.</p></li>
+    <li><span class="stamp stamp--measured">Built</span><p><b>Continuation.</b> <code>await_reply</code> lets a visiting agent that chooses to remain available receive the next event after a person or service response.</p></li>
+    <li><span class="stamp stamp--measured">Built</span><p><b>Action-bound execution.</b> A confirmation is tied to one pending request and tool, spent once, and rechecked by the Worker when the action executes.</p></li>
+    <li><span class="stamp stamp--claimed">Claimed</span><p><b>Why this widens adoption.</b> A site has no reason to declare a refund or a records release over WebMCP while it cannot tell who is calling or require the person. Attribution and a human gate are the precondition for consequential tools on the open web &mdash; and that is what 3way supplies.</p></li>
+  </ul>
+</section>
+
+<section class="wrap" id="modes">
+  <p class="eyebrow">04 · Who can speak</p>
+  <h2>Keyholder by default. Composer when the person must speak.</h2>
+  <p class="lede">
+    The layer decides not only who is attributed, but which participant gets a text box
+    at all. Authority lives in the gate, not in a box.
+  </p>
+  <div class="two" style="margin-top:2rem">
+    <div class="card">
+      <span class="card__n">Keyholder mode · the default</span>
+      <h3>No text box. The person only authorizes.</h3>
+      <p>The site's agent and the visiting agent transact in one open, attributed session. The only thing the person does, and the only thing no agent can do, is authorize the commitments that require a human. With no human-typing surface there is nothing for an agent to impersonate.</p>
+      <p style="margin-top:.8rem"><a href="./demo/halden/">The shop exchange runs in Keyholder mode →</a></p>
+    </div>
+    <div class="card">
+      <span class="card__n">Composer mode · opt-in</span>
+      <h3>The person can also speak in the thread.</h3>
+      <p>Selected per page with <code>data-3way-input="composer"</code>, or <code>mount({ composer: true })</code>. The clinic runs Composer mode because its disclosure flow needs details only the person can supply, such as which specialist should receive the records.</p>
+      <p style="margin-top:.8rem"><a href="./demo/clinic/">The records exchange runs in Composer mode →</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="evidence">
+  <p class="eyebrow">05 · Implemented evidence</p>
+  <h2>Two implemented exchanges</h2>
+  <p class="lede">
+    The shop and clinic are working evidence for the same coordination model. They are not
+    the definition of the product, and they do not imply that the other applications below
+    have been implemented or validated.
+  </p>
+  <div class="two" style="margin-top:2rem">
+    <div class="card">
+      <span class="stamp stamp--measured">Built</span>
+      <h3 style="margin-top:1rem">Shop exchange</h3>
+      <p>A visiting agent represents a damaged-item case, Halden Support evaluates its own order and warranty data, and the person retains the refund commitment. Runs in <b>Keyholder mode</b>: no text box &mdash; the person only authorizes.</p>
+      <div class="cta-row" style="margin-top:1rem"><a class="btn" href="./demo/halden/">Open the shop exchange</a></div>
+    </div>
+    <div class="card">
+      <span class="stamp stamp--measured">Built</span>
+      <h3 style="margin-top:1rem">Records exchange</h3>
+      <p>A visiting agent and clinic records agent prepare an explicit recipient and disclosure scope, while the person confirms the release itself. Runs in <b>Composer mode</b>: the person can also type, for details only they can supply.</p>
+      <div class="cta-row" style="margin-top:1rem"><a class="btn btn--ghost" href="./demo/clinic/">Open the records exchange</a></div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:3rem">Potential applications, not implemented claims</h3>
+  <table>
+    <thead><tr><th>Status</th><th>Application areas</th><th>What still needs domain work</th></tr></thead>
+    <tbody>
+      <tr><td><span class="stamp stamp--claimed">Potential</span></td><td><b>Healthcare, insurance, legal, finance, government</b></td><td>Domain policy, identity, authorization, compliance, and independent validation.</td></tr>
+      <tr><td><span class="stamp stamp--claimed">Potential</span></td><td><b>Enterprise approval</b></td><td>Organizational roles, delegation boundaries, audit requirements, and system integration.</td></tr>
+      <tr><td><span class="stamp stamp--claimed">Potential</span></td><td><b>Accessibility and disputes</b></td><td>User research, appropriate human controls, and safeguards for each consequential action.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="wrap" id="implementation">
+  <p class="eyebrow">06 · Implementation</p>
+  <div class="two">
+    <div>
+      <h2>One exchange model, enforced in code</h2>
+      <p>
+        The shared registry in <code>packages/widget/src/tools.ts</code> defines the exchange
+        operations and domain actions. 3way exposes the appropriate view through WebMCP to
+        the visiting agent, gives the service agent its own restricted view, and reflects the
+        same session state in the human-facing widget.
+      </p>
+      <p>
+        The browser coordinates the participants; it is not authoritative for a gated
+        effect. The Worker validates the pending request, assurance, action binding,
+        eligibility, and single use before a refund or record release executes.
+      </p>
+    </div>
+    <div class="record" aria-label="Implementation flow">
+      <div class="record__head"><b>Shared exchange core</b> · separated authority</div>
+      <div class="record__body">
+        <pre class="mono" style="margin:0;font-size:.82rem;line-height:1.85;overflow-x:auto;white-space:pre-wrap">packages/widget/src/tools.ts
+  ├─ WebMCP tool view → visiting agent
+  ├─ restricted tool view → service agent
+  └─ shared session events → human widget
+
+Cloudflare Worker
+  └─ authoritative execution of gated actions</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="limits">
+  <p class="eyebrow">07 · Assurance boundaries</p>
+  <div class="two">
+    <div>
+      <h2>Assurance and current limits</h2>
+      <p class="lede">
+        Attribution, presence, and consent are different claims. The implementation keeps
+        them separate so a useful record is not presented as stronger proof than it is.
+      </p>
+      <p>
+        The current demos are one implementation on one service. They demonstrate the
+        exchange mechanics; they do not establish interoperability, regulatory suitability,
+        or demand in the potential application areas.
+      </p>
+    </div>
+    <div>
+      <ul class="claims">
+        <li><span class="stamp stamp--weak">Limit</span><p><b>Message attribution is channel attribution.</b> It records which 3way path produced an entry; it does not independently verify every identity or claim behind that channel. Trust here means channel attribution and a bound gesture, not identity verification.</p></li>
+        <li><span class="stamp stamp--weak">Limit</span><p><b>WebAuthn proves presence for one bound action.</b> Server verification does not prove informed consent, comprehension, or that a compromised page displayed the same action it bound.</p></li>
+        <li><span class="stamp stamp--weak">Demo only</span><p><b>The deployed <code>trusted-click</code> fallback is lower assurance, demo-only, and unsafe for production.</b> A caller that obtains the demo session ticket and can set the expected Origin can complete this path without proving human presence. Production deployments must set <code>onMissingAuthenticator: 'refuse'</code> and refuse gated actions whenever no authenticator is available.</p></li>
+        <li><span class="stamp stamp--measured">Measured</span><p><code>await_reply</code> was tested with one model and one transcript harness. It cannot wake an agent that did not choose to wait. <a href="./gap">Read the bounded trial and its limits →</a></p></li>
+      </ul>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="wrap foot">
+  <p>
+    <b>3way.dev</b> — an attributed three-party exchange with verifiable human commitments.
+    <a href="./demo/halden/">Shop exchange</a> ·
+    <a href="./demo/clinic/">Records exchange</a> ·
+    <a href="./install">Install</a> ·
+    <a href="./conventions">Exchange contract</a> ·
+    <a href="./gap">Research</a> ·
+    <a href="./for-agents">For agents</a> ·
+    <a href="https://github.com/juanpatti/3way">GitHub</a>
+  </p>
+</footer>
+
+<script src="./assets/nav.js" defer></script>
+</body>
+</html>

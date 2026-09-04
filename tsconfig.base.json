@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": true,
+    // config/*.ts deliberately imports its types from the published package name
+    // (`@3way/widget`), not a relative path into packages/widget/src — that's what
+    // proves the published API is complete enough for an outside adopter to build
+    // config/ against (see config/policy.ts's own comment). Resolving `@3way/widget`
+    // for real requires packages/widget/package.json's `"types": "./dist/index.d.ts"`,
+    // which does not exist until `npm run build` has run at least once — so a fresh
+    // clone's first `npm run typecheck` failed with "Cannot find module '@3way/widget'"
+    // (four errors, one a confusing cascade in tools.test.ts) before this mapping
+    // existed. This redirects ONLY the type-checker, so typecheck needs no build
+    // artifact at all — the correct property for a typecheck to have. It changes
+    // nothing at runtime: every `@3way/widget` import in this repo is `import type`
+    // (verbatimModuleSyntax guarantees it's fully erased before anything runs), and it
+    // changes nothing for an external adopter either — they never see this file; their
+    // build reads package.json's `types` field, same as always.
+    //
+    // Points at types.ts specifically, not the full index.ts barrel: every
+    // `@3way/widget` import in config/*.ts is `import type`, for one of PolicyRules /
+    // Order / Product / StanceKey, and all four are DEFINED in types.ts with no imports
+    // of their own — so this alias resolves them without pulling in anything else index.ts
+    // re-exports. That distinction matters because this `paths` entry is inherited by
+    // BOTH packages/widget/tsconfig.json (browser DOM) and worker/tsconfig.json
+    // (Workers runtime, `types: ["@cloudflare/workers-types"]`, no DOM lib) — resolving
+    // to index.ts pulled ui/modal.ts's DOM-using code into the WORKER's typecheck
+    // program (any file reachable from an `import type` is fully typechecked once it's
+    // a live .ts file, not a prebuilt .d.ts) and broke it with bogus DOM-vs-Workers-types
+    // errors. types.ts has zero imports and no DOM usage, so it typechecks identically
+    // in both environments.
+    "paths": { "@3way/widget": ["./packages/widget/src/types.ts"] }
+  }
+}

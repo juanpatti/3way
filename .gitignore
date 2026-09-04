@@ -1,0 +1,21 @@
+node_modules/
+dist/
+dist-site/
+.wrangler/
+*.log
+.dev.vars
+*.dev.vars
+.env
+.env.*
+
+coverage/
+.DS_Store
+
+# Private planning, release, and submission working material.
+/internal/
+# Claude Code's own working instructions — auto-loaded from the root, never shipped.
+/CLAUDE.md
+
+# Planning and worktree scratch space.
+.superpowers/
+.worktrees/
